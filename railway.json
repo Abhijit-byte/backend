@@ -1,0 +1,31 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "pip install -r requirements.txt"
+  },
+  "deploy": {
+    "startCommand": "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn cosmic_watch.wsgi:application --bind 0.0.0.0:$PORT --workers 4",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  },
+  "environments": {
+    "production": {
+      "variables": {
+        "DEBUG": "False",
+        "DJANGO_SETTINGS_MODULE": "cosmic_watch.settings"
+      }
+    },
+    "staging": {
+      "variables": {
+        "DEBUG": "True",
+        "DJANGO_SETTINGS_MODULE": "cosmic_watch.settings"
+      }
+    }
+  },
+  "healthcheck": {
+    "path": "/api/health/",
+    "interval": 30,
+    "timeout": 10
+  }
+}
